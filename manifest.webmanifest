@@ -1,0 +1,13 @@
+{
+  "name": "GPS スピードメーター",
+  "short_name": "GPS速度計",
+  "description": "スマートフォンのGPSで速度を測るスピードメーター",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

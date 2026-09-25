@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="スマートフォンのGPSで速度を測る、シンプルなスピードメーター。">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>GPS スピードメーター</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07111f;--panel:#101d2d;--line:#223247;--muted:#91a2b7;--cyan:#56e0d0;--white:#f4f8ff;--orange:#ffbd69}
+    *{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 22%,#142b41 0%,var(--bg) 58%);color:var(--white);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;justify-content:center}button{font:inherit;color:inherit}
+    .app{width:min(100%,520px);min-height:100svh;padding:calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:20px}
+    header{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:38px;height:38px;border:1px solid #2e5265;border-radius:13px;display:grid;place-items:center;color:var(--cyan);background:#112738}.brand-mark svg{width:22px}.brand-name{font-weight:700;letter-spacing:.04em}.brand-sub{font-size:11px;color:var(--muted);margin-top:2px}.unit{display:flex;background:#0b1726;border:1px solid var(--line);border-radius:999px;padding:3px}.unit button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700}.unit button.active{background:#1b3547;color:var(--cyan)}
+    .gauge-card{position:relative;border:1px solid #20334a;border-radius:28px;background:linear-gradient(155deg,#142337,#0d1928 75%);padding:16px 14px 20px;overflow:hidden;box-shadow:0 24px 70px #0004}.gauge{width:100%;display:block;overflow:visible}.gauge .track{fill:none;stroke:#26384c;stroke-width:12;stroke-linecap:round}.gauge .progress{fill:none;stroke:var(--cyan);stroke-width:12;stroke-linecap:round;filter:drop-shadow(0 0 7px #56e0d077);transition:stroke-dashoffset .35s ease}.tick{stroke:#698099;stroke-width:2;opacity:.8}.tick.major{stroke:#c1d2df;stroke-width:3}.dial-label{fill:#91a2b7;font-size:11px;text-anchor:middle}.needle{stroke:var(--orange);stroke-width:3.5;stroke-linecap:round;filter:drop-shadow(0 0 6px #ffbd6966);transition:transform .4s ease;transform-origin:150px 153px}.needle-cap{fill:var(--orange)}.readout{position:absolute;top:52%;left:0;right:0;transform:translateY(-12%);text-align:center;pointer-events:none}.speed{font-size:clamp(76px,21vw,106px);font-weight:650;letter-spacing:-.075em;line-height:.95;font-variant-numeric:tabular-nums}.speed-unit{color:var(--muted);font-size:14px;letter-spacing:.18em;margin-top:8px}.gauge-caption{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;margin-top:-2px}
+    .status{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;min-height:22px}.dot{width:8px;height:8px;border-radius:50%;background:#64758a}.status.live{color:#c4f8ed}.status.live .dot{background:var(--cyan);box-shadow:0 0 12px #56e0d0aa}.status.error{color:#ffb5a4}.status.error .dot{background:#ff806b}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{border:1px solid var(--line);border-radius:18px;padding:16px;background:#0d1928cc;min-height:91px}.stat-label{font-size:11px;color:var(--muted);letter-spacing:.08em}.stat-value{font-size:24px;font-variant-numeric:tabular-nums;font-weight:650;margin-top:6px}.stat-value small{font-size:12px;color:var(--muted);font-weight:500;margin-left:4px}
+    .controls{display:grid;grid-template-columns:1fr 54px;gap:10px}.primary,.secondary,.export{border:1px solid transparent;border-radius:17px;min-height:58px;font-weight:700}.primary{background:var(--cyan);color:#08201f;box-shadow:0 8px 26px #56e0d022}.primary:active{transform:scale(.985)}.secondary{background:#122236;border-color:var(--line);color:var(--muted);font-size:21px}.export{background:#122236;border-color:var(--line);color:#dce8f4;min-height:48px;font-size:13px}.primary:disabled,.secondary:disabled,.export:disabled{opacity:.42}.hint{font-size:11px;line-height:1.7;text-align:center;color:#71849b;margin:0 auto;max-width:370px}.hint strong{color:#9eb3c8;font-weight:600}.hidden{display:none!important}
+    @media(min-height:850px){.app{justify-content:center}.gauge-card{padding-top:24px;padding-bottom:26px}.gauge{max-height:400px}.stats{margin-top:2px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17a9 9 0 1 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m12 13 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="13" r="1.7" fill="currentColor"/></svg></div><div><div class="brand-name">GPS SPEED</div><div class="brand-sub">スマホ GPS スピードメーター</div></div></div>
+      <div class="unit" role="group" aria-label="速度の単位"><button class="active" data-unit="kmh" aria-pressed="true">km/h</button><button data-unit="mph" aria-pressed="false">mph</button></div>
+    </header>
+    <section class="gauge-card" aria-label="現在の速度">
+      <svg class="gauge" viewBox="0 0 300 190" role="img" aria-label="速度計"><path class="track" d="M 44 153 A 106 106 0 1 1 256 153"/><path class="progress" id="progress" d="M 44 153 A 106 106 0 1 1 256 153"/><g id="ticks"></g><line id="needle" class="needle" x1="150" y1="153" x2="150" y2="72"/><circle class="needle-cap" cx="150" cy="153" r="6"/></svg>
+      <div class="readout"><div class="speed" id="speed">0</div><div class="speed-unit" id="speedUnit">KM/H</div></div>
+      <div class="gauge-caption">GPS REAL-TIME SPEED</div>
+    </section>
+    <div class="status" id="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText">測定を開始してください</span></div>
+    <section class="stats" aria-label="走行情報"><div class="stat"><div class="stat-label">最高速度</div><div class="stat-value"><span id="maxSpeed">0</span><small id="maxUnit">km/h</small></div></div><div class="stat"><div class="stat-label">GPS 精度</div><div class="stat-value"><span id="accuracy">—</span><small>m</small></div></div></section>
+    <div class="controls"><button class="primary" id="toggle">測定を開始</button><button class="secondary" id="reset" aria-label="最高速度をリセット" title="最高速度をリセット">↺</button></div>
+    <button class="export" id="export" disabled>測定記録を CSV 保存</button>
+    <p class="hint">位置情報はこの端末内で速度の計算にのみ使用します。<br><strong>HTTPS 接続と位置情報の許可</strong>が必要です。安全な場所でご利用ください。</p>
+  </main>
+  <script>
+    (()=>{
+      const $=id=>document.getElementById(id), progress=$('progress'), circumference=2*Math.PI*106*(240/360);
+      progress.style.strokeDasharray=`${circumference} ${circumference}`;progress.style.strokeDashoffset=circumference;
+      const ticks=$('ticks');for(let i=0;i<=12;i++){const a=(-120+i*20)*Math.PI/180, r1=94,r2=i%3===0?83:88,x1=150+Math.sin(a)*r1,y1=153-Math.cos(a)*r1,x2=150+Math.sin(a)*r2,y2=153-Math.cos(a)*r2;const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('class',`tick${i%3===0?' major':''}`);ticks.appendChild(l);if(i%3===0){const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',150+Math.sin(a)*70);t.setAttribute('y',153-Math.cos(a)*70+4);t.setAttribute('class','dial-label');t.textContent=String(i*10);ticks.appendChild(t)}}
+      let unit='kmh',watchId=null,last=null,max=0,currentMps=0,wakeLock=null,records=[];
+      const convert=v=>unit==='kmh'?v*3.6:v*2.236936, unitName=()=>unit==='kmh'?'km/h':'mph', setStatus=(s,type='')=>{$('status').className=`status ${type}`;$('statusText').textContent=s};
+      function render(mps){const v=Math.max(0,mps||0),display=convert(v),fraction=Math.min(display/(unit==='kmh'?120:75),1);currentMps=v;$('speed').textContent=display<10?display.toFixed(1):Math.round(display);$('speedUnit').textContent=unit==='kmh'?'KM/H':'MPH';progress.style.strokeDashoffset=circumference*(1-fraction);$('needle').style.transform=`rotate(${-120+fraction*240}deg)`;max=Math.max(max,v);$('maxSpeed').textContent=convert(max)<10?convert(max).toFixed(1):Math.round(convert(max));$('maxUnit').textContent=unitName()}
+      function stop(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}last=null;$('toggle').textContent='測定を開始';$('toggle').disabled=false;setStatus('測定を停止しました');if(wakeLock){wakeLock.release().catch(()=>{});wakeLock=null}}
+      function onPosition(pos){const c=pos.coords;let mps=c.speed;if(mps==null&&last){const dt=(pos.timestamp-last.time)/1000;if(dt>0){const rad=x=>x*Math.PI/180,R=6371000,dLat=rad(c.latitude-last.lat),dLon=rad(c.longitude-last.lon),a=Math.sin(dLat/2)**2+Math.cos(rad(last.lat))*Math.cos(rad(c.latitude))*Math.sin(dLon/2)**2;mps=2*R*Math.asin(Math.sqrt(a))/dt}}last={lat:c.latitude,lon:c.longitude,time:pos.timestamp};if(mps==null)mps=0;render(mps);records.push({time:new Date(pos.timestamp).toISOString(),kmh:mps*3.6,accuracy:c.accuracy});$('export').disabled=false;$('accuracy').textContent=Math.round(c.accuracy);setStatus(c.accuracy>50?'測定中・GPS 精度が低めです':'GPS で測定中','live')}
+      function onError(e){const messages={1:'位置情報が許可されていません。設定を確認してください',2:'GPS の位置を取得できません',3:'位置情報の取得がタイムアウトしました'};stop();setStatus(messages[e.code]||'位置情報を取得できませんでした','error')}
+      $('toggle').addEventListener('click',async()=>{if(watchId!==null){stop();return}if(!('geolocation'in navigator)){setStatus('このブラウザは位置情報に対応していません','error');return}if(!window.isSecureContext){setStatus('位置情報には HTTPS 接続が必要です','error');return}$('toggle').textContent='GPS に接続中…';$('toggle').disabled=true;setStatus('GPS の位置を取得しています…');try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen')}catch{}watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:1000,timeout:15000});$('toggle').textContent='測定を停止';$('toggle').disabled=false});
+      document.querySelectorAll('[data-unit]').forEach(b=>b.addEventListener('click',()=>{unit=b.dataset.unit;document.querySelectorAll('[data-unit]').forEach(x=>{const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});render(currentMps)}));
+      $('reset').addEventListener('click',()=>{max=0;$('maxSpeed').textContent='0'});document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&watchId!==null&&'wakeLock'in navigator)try{wakeLock=await navigator.wakeLock.request('screen')}catch{}});
+      $('export').addEventListener('click',()=>{if(!records.length)return;const rows=[['時刻 (UTC)','速度 (km/h)','GPS精度 (m)'],...records.map(r=>[r.time,r.kmh.toFixed(2),r.accuracy.toFixed(1)])];const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),stamp=new Date().toISOString().replaceAll(':','-').replaceAll('.','-');a.href=url;a.download=`gps-speed-${stamp}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+      if('serviceWorker'in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    })();
+  </script>
+</body>
+</html>
