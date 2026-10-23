@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "GPS スピードメーター 距離ラップ版",
+  "short_name": "距離ラップ計",
+  "description": "スマートフォンのGPSで速度を測り、距離で自動ラップを刻むスピードメーター",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
