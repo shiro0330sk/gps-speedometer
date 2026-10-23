@@ -1,4 +1,4 @@
-const CACHE='gps-speedometer-distance-lap-v9';
+const CACHE='gps-speedometer-distance-lap-v10';
 const CACHE_PREFIX='gps-speedometer-distance-lap-';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));

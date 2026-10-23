@@ -89,7 +89,7 @@
           const candidate={...point,speed:mps,positionGood};
           if(mps*3.6<readySpeedKmh){readyCandidate=null;readyPosition=candidate;setStatus('gpsStatus',`READY待機中：${readySpeedKmh.toFixed(1)} km/h以上で開始`,'live');render();return}
           if(!readyCandidate||receivedAt-readyCandidate.receivedAt>4000||now<=readyCandidate.time){readyCandidate=candidate;readyPosition=candidate;setStatus('gpsStatus',`READY：速度を確認中 ${ (mps*3.6).toFixed(1) } km/h`,'live');render();return}
-          readyArmed=false;activeStartedAt=readyCandidate.receivedAt;running=true;lastPosition=readyCandidate;readyPosition=null;readyCandidate=null;$('readyButton').textContent='READY';$('toggle').textContent='停止';
+          readyArmed=false;activeStartedAt=readyCandidate.receivedAt;running=true;lastPosition={...readyCandidate,elapsed:0};readyPosition=null;readyCandidate=null;$('readyButton').textContent='READY';$('toggle').textContent='停止';
           source=Number.isFinite(rawSpeed)&&rawSpeed>=0?'GPS速度':source;
         }
         const elapsedAtFix=elapsedNow(),previousPosition=lastPosition,distanceBefore=totalDistance;
@@ -101,7 +101,7 @@
           currentMps=mps;gpsStale=false;
           if(lastPosition&&dt>0){distanceAdded=source==='位置差分'?segment:Math.max(0,(lastPosition.speed+mps)*0.5*dt);distanceMode=dt>10?'長時間速度補間・概算':dt>3?'速度補間':source==='位置差分'?'位置差分':'速度積分';totalDistance+=distanceAdded}
           else if(lastPosition&&dt<=0)distanceMode='時刻異常・未積算';
-          point.speed=mps;point.positionGood=positionGood;lastPosition=point;
+          point.speed=mps;point.positionGood=positionGood;point.elapsed=elapsedAtFix;lastPosition=point;
           averageElapsed=elapsedAtFix;averageMps=elapsedAtFix>0?totalDistance/(elapsedAtFix/1000):0;
         }
         const elapsed=elapsedAtFix;
