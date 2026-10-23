@@ -28,7 +28,7 @@ jobs:
           mkdir site
           cp index.html manifest.webmanifest sw.js icon.svg site/
           mkdir -p site/distance-lap
-          cp distance-lap/index.html distance-lap/manifest.webmanifest distance-lap/sw.js distance-lap/icon.svg site/distance-lap/
+          cp distance-lap/index.html distance-lap/manifest.webmanifest distance-lap/sw.js distance-lap/icon.svg distance-lap/icon-192.png distance-lap/icon-512.png distance-lap/apple-touch-icon.png site/distance-lap/
           touch site/.nojekyll
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v4
